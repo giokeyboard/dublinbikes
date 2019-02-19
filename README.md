@@ -1,2 +1,2 @@
 # dublinbikes
-project repo for Project Engineering COMP30830
+project repo for Software Engineering COMP30830
