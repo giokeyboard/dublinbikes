@@ -112,10 +112,10 @@ while True:
     day = get_day()  # Calling the get_day function and store the returned data
     time_hr = get_hour()
     mins = get_mins()
-    date = get_date()
-    date = str(date)  # Convert date to string
+    date_d = get_date()
+    date_s = str(date_d)  # Convert date to string
     print(day)  # Control print statement
-    print(date)  # Control print statement
+    print(date_s)  # Control print statement
 
     value = get_count()  # Calling the get_count function to invoke the API
     db = pymysql.connect(HOST, USERNAME, PASSWORD, DATABASE)  # Open database connection
@@ -130,7 +130,7 @@ while True:
         # sql= """INSERT INTO mydb.dynamic_data_6 (available) VALUES ('%s')""" % (number_bikes_available)
         sql = """INSERT INTO dublinbikes.availability (number,available_bikes,available_bike_stands,last_update,
         day_of_week,hour_d,mins,date_of_fetching) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')""" % (
-            number_d, available_bikes_d, available_bike_stands_d, last_update_d, day, time_hr, mins, date)
+            number_d, available_bikes_d, available_bike_stands_d, last_update_d, day, time_hr, mins, date_s)
         try:
             print("Line 1 ")
             cursor.execute(sql)  # Execute the SQL command
