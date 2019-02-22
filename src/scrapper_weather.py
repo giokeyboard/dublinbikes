@@ -70,16 +70,16 @@ while True:
     day = get_day()  # Extract the day of the week
     time_hr = get_hour()
     mins = get_mins()
-    date = get_date()
-    date = str(date)  # Convert date to string
+    date_d = get_date()
+    date_s = str(date_d)  # Convert date to string
     print(day)  # Control print statement
-    print(date)  # Control print statement
+    print(date_s)  # Control print statement
 
     db = pymysql.connect(HOST, USERNAME, PASSWORD, DATABASE)  # create db connection object
     cursor = db.cursor()  # prepare a cursor object using cursor() method
     sql = """INSERT INTO dublinbikes.weather (temperature,day_of_week,wind_speed,cloud_coverage,hour_d,mins,
     date_of_fetching) VALUES ('%s','%s','%s','%s','%s','%s','%s')""" % (
-        temp, day, speed, cloud, time_hr, mins, date)
+        temp, day, speed, cloud, time_hr, mins, date_s)
     try:
         print("Line 1 ")
         cursor.execute(sql)  # Execute the SQL command
