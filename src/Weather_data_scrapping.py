@@ -38,12 +38,14 @@ def get_day():     #function to get the day of the week
 while True:
     value=get_count()     #Store the response Json data obtained from open weather API
     temp=value['main']['temp']      #Extract the temperature data
+    speed=value['wind']['speed']    #Extract the wind speed
+    cloud=value['weather'][0]['main']   #Extract the cloud value
     day=get_day()          #Store the day of the week
     print(day)
     db = pymysql.connect(HOST,USERNAME, PASSWORD, DATABASE)
 # prepare a cursor object using cursor() method
     cursor = db.cursor()
-    sql = """INSERT INTO dublinbikes.weather (temperature,day_of_week) VALUES ('%s','%s')""" % (temp,day)
+    sql = """INSERT INTO dublinbikes.weather (temperature,day_of_week,wind_speed,cloud_coverage) VALUES ('%s','%s','%s','%s')""" % (temp,day,speed,cloud)
     try:
         print("Line 1 ")
         cursor.execute(sql) # Execute the SQL command
