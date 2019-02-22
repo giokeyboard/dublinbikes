@@ -1,14 +1,11 @@
-
-# coding: utf-8
-
-# In[ ]:
-
+# Program to scrap dynamic and static data from JCDecaux
+# Sending all to MySQL DB
 
 import requests    #to send the request to the API
 from bs4 import BeautifulSoup
 import time        #to set the delay time of invoking the API
 
-import MySQLdb     #to set up the database connecction
+import pymysql     #to set up the database connecction
 HOST = "dublinbikes.cb2pu3bkmmlf.us-east-2.rds.amazonaws.com"
 USERNAME = "master"
 PASSWORD = "master-50"
@@ -28,7 +25,7 @@ def get_count():   #function to call the api
     return data
 def station():
     value=get_count()
-    db = MySQLdb.connect(HOST,USERNAME, PASSWORD, DATABASE)
+    db = pymysql.connect(HOST,USERNAME, PASSWORD, DATABASE)
 # prepare a cursor object using cursor() method
     cursor = db.cursor()
     for i in range(0,len(value)):
@@ -70,7 +67,7 @@ while True:
    # print(get_count())   #Calling the function after a delay of 300 seconds or 5 minutes
     value=get_count()     #Calling the get_count function to invoke the API
     # Open database connection
-    db = MySQLdb.connect(HOST,USERNAME, PASSWORD, DATABASE)
+    db = pymysql.connect(HOST,USERNAME, PASSWORD, DATABASE)
 # prepare a cursor object using cursor() method
     cursor = db.cursor()
     for i in range(0,len(value)):
