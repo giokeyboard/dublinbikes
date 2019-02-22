@@ -19,8 +19,7 @@ def get_count():  # function to call the API
     function to call the OpenWeatherMap API and parse the JSON data
     :return: JSON file
     """
-    url = "http://api.openweathermap.org/data/2.5/weather?id=7778677&APPID=a4822db1b5634c2e9e25209d1837cc69&units" \
-          "=metric "
+    url = "http://api.openweathermap.org/data/2.5/weather?id=7778677&APPID=a4822db1b5634c2e9e25209d1837cc69&units=metric"
     # Request with fake header to avoid 403 HTTP error that might arise
     r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
 
