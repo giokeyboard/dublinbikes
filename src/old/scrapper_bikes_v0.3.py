@@ -14,7 +14,7 @@ PASSWORD = "master-50"
 DATABASE = "dublinbikes"
 
 
-def get_count():  # Function to call the API
+def get_count():  # Function to call the JCDecaux API
     """
     function to call the JCDecaux API and parse the JSON data
     :return: JSON file
