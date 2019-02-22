@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path="docs"/>
-	<classpathentry kind="src" path="img"/>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Python 3.7 (dublinbikes) interpreter library"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
