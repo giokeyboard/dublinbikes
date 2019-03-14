@@ -147,4 +147,4 @@ while True:
     # disconnect from server
     db.close()
 
-    time.sleep(800)  # A delay of 400 seconds after which invoke or send request to JCDecaux API
+    time.sleep(700)  # A delay of 400 seconds after which invoke or send request to JCDecaux API
