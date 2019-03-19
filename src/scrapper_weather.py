@@ -96,4 +96,4 @@ while True:
     # disconnect from server
     db.close()
 
-    time.sleep(900)  # A delay of 900 seconds or 15 minutes after which again a request is send to API
+    time.sleep(720)  # A delay of 720 seconds or 12 minutes after which again a request is send to API
