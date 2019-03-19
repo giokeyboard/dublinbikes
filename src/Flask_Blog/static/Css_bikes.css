@@ -3,7 +3,7 @@
   width: 100%;
   box-sizing: border-box;
   background-color: #1a4a50;
-  color: darkgray;
+  color: #eef0f2;
   font-family: 'Exo 2', sans-serif;
   font-size: 10px;
   margin: 0;
@@ -34,7 +34,7 @@
 }
 
 #headbar span {
-  border-bottom: 2px solid white;
+  border-bottom: 2px solid #eef0f2;
   margin-bottom: 8px;
 }
 
@@ -47,6 +47,11 @@
 }
 
 /* Map */
+#map {
+  width: 100%;
+  height: 70vh;
+  color: grey;
+}
 
 
 /* Sidebar */
@@ -96,7 +101,7 @@
   content:'';
   width: 2px;
   height: 150px;
-  background: white;
+  background: #eef0f2;
   position: absolute;
   right: 0;
   top: 20px;
@@ -106,7 +111,7 @@
   content:'';
   width: 2px;
   height: 150px;
-  background: white;
+  background: #eef0f2;
   position: absolute;
   left: 0;
   top: 20px;
@@ -125,8 +130,6 @@
 
 .tripBtn:hover {
   cursor: pointer;
-  /* opacity: 0.5;
-  border: 1px solid white; */
   transform: scale(1.15);
 }
 
@@ -154,7 +157,6 @@
   margin-top: 7px;
   margin-bottom: 7px;
   padding: 5px 0;
-  /* opacity: 0.5; */
 }
 
 
@@ -186,20 +188,20 @@
 #from input, #to input {
   width: 80%;
   margin-left: 5px;
-  color: darkgrey;
+  color: black;
 }
 
-#submit {
+/* #submit {
   width: 150px;
   background-color: #404040;
-  color: white;
+  color: #eef0f2;
   font-size: 1.3em;
-  border-color: darkgrey;
+  border-color: #eef0f2;
 }
 
 #submit:hover {
   cursor: pointer;
-}
+} */
 
 
 /* Weather */
