@@ -26,12 +26,18 @@ def home():
     cur = con.cursor()
     cur.execute("SELECT * FROM dublinbikes.station")
     data = cur.fetchall()
+    cur2= con.cursor()
+    cur2.execute("SELECT * FROM availability where ID in (SELECT max(ID) FROM (select * from (select * from availability order by id Desc limit 226) sub order by id asc)as T GROUP BY number )  order by ID")
+    data2=cur2.fetchall()
+    
     data=list(data)
-   
+    data2=list(data2)
+    print(data)
+    print(data2)
 
     
 
-    return render_template('Dublin_bike_2.html',data=data)
+    return render_template('Copy_Dublin_bike_2_v2_cleaned.html',data=data,data2=data2)
 
 @app.route("/about")
 def about():
