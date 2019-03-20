@@ -9,6 +9,31 @@
   margin: 0;
 }
 
+/* rules to create the dropup results */
+main {
+  position: relative;
+}
+
+#dropup {
+  display: none;
+  position: absolute;
+  left: 10px;
+  top: 20%;
+  background-color: #1a4a50;
+  z-index: 1;
+  font-size: 1.4em;
+  padding: 0 10px;
+  border: 1px solid white;
+  max-width: 300px;
+}
+
+#sourceTitle, #destTitle {
+  font-weight: bold;
+}
+
+#dropup span {
+  color: yellowgreen;
+}
 
 /* Header */
 #headbar {
@@ -89,7 +114,6 @@
 }
 
 /* Trip */
-
 #trip {
   width: 50%;
   display: flex;
@@ -157,8 +181,13 @@
   margin-top: 7px;
   margin-bottom: 7px;
   padding: 5px 0;
+  border-radius: 7%;
+  background-color: #1a4a50;
 }
 
+#plantripBtn img{
+  padding-left: 5px;
+}
 
 #form {
   width: 60%;
@@ -174,7 +203,7 @@
   padding-right: 40px;
 }
 
-#from, #to {
+#from, #to, #day, #time {
   padding-bottom: 15px;
   font-size: 1.3em;
 }
@@ -191,17 +220,45 @@
   color: black;
 }
 
-/* #submit {
+#datetime {
+  display: flex;
+}
+
+#day {
+  width: 60%;
+  text-align: left;
+  padding-left: 10px;
+}
+
+#time {
+  width: 40%;
+  padding-left: 3px;
+}
+
+#dayInput {
+  margin-left: 5px;
+  color: black;
+  height: 20px;
+}
+
+#timeInput {
+  margin-left: 5px;
+  color: black;
+  height: 17px;
+}
+
+#submit {
   width: 150px;
-  background-color: #404040;
+  background-color: grey;
   color: #eef0f2;
   font-size: 1.3em;
+  font-weight: bold;
   border-color: #eef0f2;
 }
 
 #submit:hover {
   cursor: pointer;
-} */
+}
 
 
 /* Weather */

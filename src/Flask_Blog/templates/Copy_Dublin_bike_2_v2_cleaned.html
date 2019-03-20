@@ -21,8 +21,8 @@
             <div id="map"></div>
             <section id="sidebar">
                 <div id="message">
-                  <h2>WHO TOLD YOU IT IS<br>ALL ABOUT LUCK?</h2>
-                  <p>Right now <span>64%</span> of all bikes<br>are being used. Let us predict<br>the best stations for you.</p>
+                  <h2>WHO TOLD YOU IT IS ALL ABOUT LUCK?</h2>
+                  <p>Right now <span>64%</span> of all bikes<br>are being used. Let us predict the best stations for you.</p>
                 </div>
                 <div id="trip">
                   <div id="tripButtons">
@@ -47,6 +47,38 @@
                         <input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" />
                       </div>
                     </div>
+
+                    <!-- <div class="inputs">
+                      <div id="from">
+                        <span>FROM:</span>
+                        <input id="searchTextField" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize()"/>
+                      </div>
+                      <div id="to">
+                        <span>TO:</span>
+                        <input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" />
+                      </div>
+                      <div id="datetime">
+                        <div id="day">
+                          <span>DAY:</span>
+                          <select id="dayInput">
+                            <option value="today">today</option>
+                            <option value="nMonday">next monday</option>
+                            <option value="nTuesday">next tuesday</option>
+                            <option value="nWednesday">next wednesday</option>
+                            <option value="nThursday">next thursday</option>
+                            <option value="nFriday">next friday</option>
+                            <option value="nSaturday">next saturday</option>
+                            <option value="nSunday">next sunday</option>
+                          </select>
+                        </div>
+                        <div id="time">
+                          <span>TIME:</span>
+                          <input id="timeInput" type="time">
+                        </div>
+                      </div>
+                    </div>
+                    <button id="submit" type="submit">SUBMIT</button> -->
+                    
                   </div>
                 </div>
                 <div id="weather">
@@ -67,12 +99,33 @@
                   </div>
                 </div>
               </section>
-              <p id="demo2"></p>
-              <p id="demo4"></p>
-              <p id="demo5"></p>
-              <p id="demo6"></p>
+              <div id="dropup">
+                <p id="sourceTitle"></p>
+                <p id="sourceList"></p>
+                <p id="destTitle"></p>
+                <p id="destList"></p>
+              </div>
         </main>
         <script>
+            // functions to change from real time to plan trip
+            var planTrip=document.getElementById("plantripBtn");
+            var realTime=document.getElementById("realtimeBtn");
+            var form=document.getElementById("form");
+            planTrip.onclick=function() {
+              realTime.style.backgroundColor="#1a4a50";
+              planTrip.style.backgroundColor="#2c7c87";
+              form.innerHTML='<div class="inputs"><div id="from"><span>FROM:</span><input id="searchTextField" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize()"/></div><div id="to"><span>TO:</span><input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" /></div><div id="datetime"><div id="day"><span>DAY:</span><select id="dayInput"><option value="today">today</option><option value="nMonday">next monday</option><option value="nTuesday">next tuesday</option><option value="nWednesday">next wednesday</option><option value="nThursday">next thursday</option><option value="nFriday">next friday</option><option value="nSaturday">next saturday</option><option value="nSunday">next sunday</option></select></div><div id="time"><span>TIME:</span><input id="timeInput" type="time"></div></div></div><button id="submit" type="submit">SUBMIT</button>';
+              form.style.paddingTop="35px";
+            }
+
+            realTime.onclick=function() {
+              realTime.style.backgroundColor="#2c7c87";
+              planTrip.style.backgroundColor="#1a4a50";
+              form.innerHTML='<p>Need a bike right now?</p><div class="inputs"><div id="from"><span>FROM:</span><input id="searchTextField" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize()"/></div><div id="to"><span>TO:</span><input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" /></div></div>'
+              form.style.paddingTop="0px";
+            }
+
+            // To get data from flask
             var myObj={{ data|tojson }};
             var myObj2={{ data2|tojson }};
 
@@ -213,10 +266,11 @@
                         if(bike_available_nearest_station>0 ||bike_available_second_near_station>0 )
                             {
                             //document.getElementById("demo4").innerHTML="the minimum distance is "+min;
-                            document.getElementById("demo2").innerHTML="Nearest station to your source is: "+nearest_station+" "+". Avaiable bikes : "+bike_available_nearest_station;
-
-                             document.getElementById("demo4").innerHTML="Secocnd nearest station to your souce is:  "+second_nearest_station+" "+". Avaiable bikes : "+bike_available_second_near_station;
-
+                            // document.getElementById("demo2").innerHTML="Nearest station to your source is: <b>"+nearest_station+"</b>.<br> "+"(Avaiable bikes: "+bike_available_nearest_station+")";
+                            //
+                            //  document.getElementById("demo4").innerHTML="Second nearest station to your souce is: <b>"+second_nearest_station+"</b>.<br> "+"(Avaiable bikes: "+bike_available_second_near_station+")";
+                              document.getElementById("sourceTitle").innerHTML="Nearest stations to your source:"
+                              document.getElementById("sourceList").innerHTML="1- <span>"+nearest_station+"</span> (Available bikes: "+bike_available_nearest_station+")<br> 2- <span>"+second_nearest_station+"</span> (Available bikes: "+bike_available_second_near_station+")"
                             }
                         /*
                         if(bike_available_second_near_station>0)
@@ -230,9 +284,9 @@
                         else
                             {
 
-                            document.getElementById("demo4").innerHTML="The two nearest stations to your location seems to be busy. Try again in few minutes!!";
+                            document.getElementById("sourceTitle").innerHTML="The two nearest stations to your location seems to be busy. Try again in few minutes!!";
 
-                            document.getElementById("demo2").innerHTML= " ";
+                            document.getElementById("sourceList").innerHTML= " ";
                             }
                         //document.getElementById("demo4").innerHTML="the minimum distance is "+min;
                         //document.getElementById("demo2").innerHTML="The nearest station to your souce coordinate is "+nearest_station;
@@ -247,9 +301,13 @@
                         if(bike_stand_available_nearest_station>0 || bike_stand_available_second_near_station>0 )
                             {
                            // document.getElementById("demo5").innerHTML="the minimum distance is "+min;
-                            document.getElementById("demo5").innerHTML="Nearest station to your destination is "+nearest_station+" "+". Avaiable bike stands are:"+bike_stand_available_nearest_station;
+                            // document.getElementById("demo5").innerHTML="Nearest station to your destination is <b>"+nearest_station+"</b>.<br> "+"(Avaiable bike stands: "+bike_stand_available_nearest_station+")";
+                            //
+                            // document.getElementById("demo6").innerHTML="Second nearest station to your destination is <b>"+second_nearest_station+"</b>.<br> "+"(Avaiable bike stands: "+bike_stand_available_second_near_station+")";
 
-                            document.getElementById("demo6").innerHTML="Second nearest station to your destination is "+second_nearest_station+" "+". Avaiable bike stands are: "+bike_stand_available_second_near_station ;
+                            document.getElementById("destTitle").innerHTML="Nearest stations to your destination:"
+                            document.getElementById("destList").innerHTML="1- <span>"+nearest_station+"</span> (Available bike stands: "+bike_stand_available_nearest_station+")<br> 2- <span>"+second_nearest_station+"</span> (Available bike stands: "+bike_stand_available_second_near_station+")"
+
 
                             }
                         /*
@@ -264,14 +322,15 @@
                         else
                             {
 
-                            document.getElementById("demo5").innerHTML="The two nearest stations to your location seems to be busy. Try again in few minutes!!";
+                            document.getElementById("destTitle").innerHTML="The two nearest stations to your location seems to be busy. Try again in few minutes!!";
 
-                            document.getElementById("demo6").innerHTML= " ";
+                            document.getElementById("destList").innerHTML= " ";
                             }
 
                        // document.getElementById("demo5").innerHTML="the minimum distance is "+min;
                        // document.getElementById("demo6").innerHTML="The nearest station to your destination coordinate is "+nearest_station;
                     }
+                    document.getElementById("dropup").style.display = "block";
                 }
 
                 //This function is triggered whenver user clicks on "Enter starting point" field to enter the source
@@ -288,8 +347,8 @@
                     });
 
                 }
-                //This function is triggered whenver user clicks on "Enter ending point" field to enter the destination
 
+                //This function is triggered whenver user clicks on "Enter ending point" field to enter the destination
 
                 function initialize2() {
                     var input = document.getElementById('searchTextField2');
@@ -299,9 +358,7 @@
                         var latitude = place.geometry.location.lat();
                         var longitude=place.geometry.location.lng();
                         var m=1;
-
                         getDistanceFromLatLonInKm(latitude,longitude,m);
-
                     });
                 }
 
