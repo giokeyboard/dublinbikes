@@ -106,6 +106,11 @@
                 <p id="destList"></p>
               </div>
         </main>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> 
+        
+        <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        </script>
         <script>
             // functions to change from real time to plan trip
             var planTrip=document.getElementById("plantripBtn");
@@ -127,7 +132,7 @@
 
             // To get data from flask
             var myObj={{ data|tojson }};
-            var myObj2={{ data2|tojson }};
+            
 
             // document.getElementById("demo7").innerHTML=myObj2;
 
@@ -155,20 +160,7 @@
                     latlong[i]=[lat[i],long[i]];
                 }
 
-            var station_number=new Array(myObj2.length);
-            var bikes_available=new Array(myObj2.length);
-            var bike_stands_availabe=new Array(myObj2.length);
-
-            for(var i=0;i<myObj2.length;i++)
-                {
-
-                 station_number[i]= myObj2[i][1];
-                 bikes_available[i]= myObj2[i][2];
-                 bike_stands_availabe[i]= myObj2[i][3];
-
-
-
-                }
+            
 
     //To fetch the list of station names
             var address_2=new Array(myObj.length);
@@ -176,29 +168,17 @@
             for(var i=0;i<myObj.length;i++)
                 {
                 address_2[i]=myObj[i][0];
-                static_station_no[i]=myObj[i][5];
+               // static_station_no[i]=myObj[i][5];
                 }
-            var common_station_no = station_number.filter(id => static_station_no.includes(id));
-           // document.getElementById("demo7").innerHTML= common_station_no;
-            //document.getElementById("demo8").innerHTML= common_station_no.length;
-
-
-            var station_no_bikes_avail_stand=new Array(common_station_no.length);
-            for(var i=0;i<common_station_no.length;i++)
-                {
-                    for(var j=0;j<myObj2.length;j++)
-                        {
-                            if(common_station_no[i]==myObj2[j][1])
-                                {
-
-                                station_no_bikes_avail_stand[i]=[myObj2[j][1],myObj2[j][2],myObj2[j][3]];
-
-                                }
-                        }
-                }
+        
             //document.getElementById("demo7").innerHTML= station_no_bikes_avail_stand;
             //document.getElementById("demo8").innerHTML= station_no_bikes_avail_stand.length;
-
+             //latest update following lines for individual marker update 
+            var station_num=new Array(myObj.length);
+            for(var i=0;i<myObj.length;i++)
+            {
+                station_num[i]=myObj[i][5];
+             }
 
             var infowindow;
 
@@ -217,9 +197,7 @@
                     position:new google.maps.LatLng(latlong[j][0],latlong[j][1]),
                     map:map,
                     addre:address_2[j],
-                    station_no:station_no_bikes_avail_stand[j][0],
-                    bikes_avail:station_no_bikes_avail_stand[j][1],
-                    bikestands_avail:station_no_bikes_avail_stand[j][2]
+                    station_no:station_num[j]
 
             });
       popupDirections(marker);
@@ -231,15 +209,71 @@
 
                 //This function created listener listens for click on a marker to show information specific to that marker
                 google.maps.event.addListener(marker, 'click', function () {
+                    
+                    myFunction(marker.station_no);
+                function myFunction(x) {
+                $.getJSON($SCRIPT_ROOT + '/update', {
+                    post: x
+                }, function(data) {
+             
+           
+            var response=({{ data|safe }})
+             var response = data;
 
-                    infowindow.setContent("Address: " + marker.addre +"<br>"+"Station No: " + marker.station_no+"<br>"+"Bikes available: "+marker.bikes_avail+"<br>"+"Bike Stands Available: " + marker.bikestands_avail);
-                 infowindow.open(map, marker); //This opens the infowindow at the marker
-                });
+                  infowindow.setContent("Address: " + marker.addre +"<br>"+"Station No: " + response[1]+"<br>"+"Available Bikes: "+response[2]+"<br>"+"Available Bike Stands: "+response[3]); 
+                    infowindow.open(map, marker); //This opens the infowindow at the marker
+                    
+                }
+                );
             }
+                    
+                     });
+            }
+            
+             function myfunction_get_updated_available_bikes_and_stands(latitude,longitude,m)
+            {
+                var latitude=latitude;
+                var longitude=longitude;
+                var m=m;
+                
+                $.getJSON($SCRIPT_ROOT + '/all_available_details', {
+                    post: 0
+                }, function(data) {
+             
+                var response_2=({{ data|safe }})
+                var response_2 = data;
+                var station_number=new Array(response_2.length);
+               
+                for (var i=0;i<response_2.length;i++)
+                    {
+                        
+                       station_number[i]= response_2[i][0]; 
+                        
+                    }
+                
+                var common_station_no = station_number.filter(id => station_num.includes(id));  //station_num is the static station number received from table station
+                   
+                var station_no_bikes_avail_stand=new Array(common_station_no.length);
+                for(var i=0;i<common_station_no.length;i++)
+                {
+                    for(var j=0;j<response_2.length;j++)
+                        {
+                            if(common_station_no[i]==response_2[j][0])
+                                {
+
+                                station_no_bikes_avail_stand[i]=[response_2[j][0],response_2[j][1],response_2[j][2]];
+
+                                }
+                        }
+                }
+                getDistanceFromLatLonInKm(latitude,longitude,m,station_no_bikes_avail_stand);
+             }
+        );   
+    }
 
             //This function finds the closest station corresponding to the chosen source and destination by the user
 
-            function getDistanceFromLatLonInKm(latitude,longitude,m) {
+            function getDistanceFromLatLonInKm(latitude,longitude,m,station_no_bikes_avail_stand){
                 var x= latitude;
                 var y=longitude;
                 var closest_location;
@@ -343,7 +377,9 @@
                         var latitude = place.geometry.location.lat();
                         var longitude=place.geometry.location.lng();
                         var m=0;
-                        getDistanceFromLatLonInKm(latitude,longitude,m);
+                        
+                        myfunction_get_updated_available_bikes_and_stands(latitude,longitude,m);
+                        //getDistanceFromLatLonInKm(latitude,longitude,m);
                     });
 
                 }
@@ -358,7 +394,8 @@
                         var latitude = place.geometry.location.lat();
                         var longitude=place.geometry.location.lng();
                         var m=1;
-                        getDistanceFromLatLonInKm(latitude,longitude,m);
+                        myfunction_get_updated_available_bikes_and_stands(latitude,longitude,m);
+                        //getDistanceFromLatLonInKm(latitude,longitude,m);
                     });
                 }
 
