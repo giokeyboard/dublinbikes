@@ -27,19 +27,19 @@ def home():
     cur = con.cursor()
     cur.execute("SELECT * FROM dublinbikes.station")
     data = cur.fetchall()
-    '''
-    cur2= con.cursor()
-    cur2.execute("SELECT * FROM availability where ID in (SELECT max(ID) FROM (select * from (select * from availability order by id Desc limit 226) sub order by id asc)as T GROUP BY number )  order by ID")
-    data2=cur2.fetchall()
-    '''
+    
+    cur4= con.cursor()
+    cur4.execute("SELECT temperature,wind_speed,cloud_coverage FROM (SELECT * FROM weather ORDER BY id DESC LIMIT 1)sub ")
+    data4=cur4.fetchone()
+    
     data=list(data)
-    #data2=list(data2)
+    data4=list(data4)
     print(data)
-    #print(data2)
+    print(data4)
 
     
 
-    return render_template('Copy_Dublin_bike_2_v2_cleaned.html',data=data)
+    return render_template('Copy_Dublin_bike_2_v2_cleaned.html',data=data,data4=data4)
 
 @app.route("/update", methods=['GET','POST'])
 def update():
@@ -101,6 +101,39 @@ def all_available_details():
     print(len(data2))
     
     return json.dumps(data2);
+
+@app.route("/weather", methods=['GET','POST'])
+def weather():
+    post = request.args.get('post', 0, type=int)
+    print(post)
+    post=int(post)
+    print(type(post))
+    import sys
+    import pymysql
+    import re
+    host='dublinbikes.cb2pu3bkmmlf.us-east-2.rds.amazonaws.com'
+    user = 'master'
+    password = 'master-50'
+    db = 'dublinbikes'
+    try:
+        con = pymysql.connect(host=host,user=user,password=password,db=db, use_unicode=True, charset='utf8')
+        print('+=========================+')
+        print('|  CONNECTED TO DATABASE  |')
+        print('+=========================+')
+    except Exception as e:
+        sys.exit('error',e)
+    cur5= con.cursor()
+    cur5.execute("SELECT temperature,wind_speed,cloud_coverage FROM (SELECT * FROM weather ORDER BY id DESC LIMIT 1)sub ")
+    data5=cur5.fetchone()
+    
+    
+    print(type(data5))
+    
+    print(data5)
+    print(len(data5))
+    
+    return json.dumps(data5);
+
 
 
 

@@ -82,19 +82,19 @@
                   </div>
                 </div>
                 <div id="weather">
-                  <h2>13 MARCH 2019<br>DUBLIN, IRELAND</h2>
+                  <h2 id="date"></h2>
                   <div id="conditions">
                     <div class="condition">
                       <img src="{{ url_for('static',filename='img/drizzle.png') }}" alt="forecast pic">
-                      <span>RAIN</span>
+                      <span id="coverage">{{data4[2]}}</span>
                     </div>
                     <div class="condition">
                       <img src="{{ url_for('static',filename='img/thermometer.png') }}" alt="thermometer pic">
-                      <span>12°C</span>
+                      <span  id="temp">{{data4[0]}} C</span>
                     </div>
                     <div class="condition">
                       <img src="{{ url_for('static',filename='img/breeze.png') }}" alt="wind pic">
-                      <span>29 KM/h</span>
+                      <span id="wind">{{data4[1]}} km/h</span>
                     </div>
                   </div>
                 </div>
@@ -112,6 +112,53 @@
         $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
         </script>
         <script>
+            
+             // function to show the current date
+            var today = new Date();
+            var day = today.getDate();
+            var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            var month = monthNames[today.getMonth()];
+            var year = today.getFullYear();
+            var date = day + " " + month + " " + year + "<br>DUBLIN, IRELAND";
+            document.getElementById("date").innerHTML = date;
+
+            // function to call the weather forecast route every 5000 sec
+           var myVar=setInterval(myTimer,100000);
+           
+            function myTimer()
+            {
+                $.getJSON($SCRIPT_ROOT + '/weather', {
+                    post: 0
+                }, function(data) {
+                     var response_3=({{ data|safe }})
+                    var response_3 = data;
+                    document.getElementById("coverage").innerHTML = response_3[2];
+                    document.getElementById("temp").innerHTML = response_3[0] + "°C";
+                    document.getElementById("wind").innerHTML = response_3[1] + "km/h";
+                })
+                
+                
+            }
+            
+            
+            /*
+                 setTimeout(function() {
+                $.getJSON($SCRIPT_ROOT + '/weather', {
+                    post: 0
+                }, function(data) {
+                     var response_3=({{ data|safe }})
+                    var response_3 = data;
+                    document.getElementById("coverage").innerHTML = response_3[2];
+                    document.getElementById("temp").innerHTML = response_3[0] + "°C";
+                    document.getElementById("wind").innerHTML = response_3[1] + "km/h";
+                })
+                     refresh();
+            }, 2000); 
+                
+            
+         */
+            
+            
             // functions to change from real time to plan trip
             var planTrip=document.getElementById("plantripBtn");
             var realTime=document.getElementById("realtimeBtn");
