@@ -46,7 +46,7 @@
                                 <span>TO:</span>
                                 <input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" />
                             </div>
-                        </div> 
+                        </div>
 
                     </div>
                 </div>
@@ -76,7 +76,7 @@
             </div>
         </main>
 
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> 
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
         <script type=text/javascript>
         $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
@@ -105,7 +105,7 @@
                     document.getElementById("coverage").innerHTML = response_3[2];
                     document.getElementById("temp").innerHTML = response_3[0] + "°C";
                     document.getElementById("wind").innerHTML = response_3[1] + "km/h";
-                }) 
+                })
             }
 
 
@@ -121,31 +121,36 @@
                     document.getElementById("wind").innerHTML = response_3[1] + "km/h";
                 })
                      refresh();
-            }, 2000); 
+            }, 2000);
 
 
          */
 
+            // functions to change from real time to plan trip
+            var planTrip=document.getElementById("plantripBtn");
+            var realTime=document.getElementById("realtimeBtn");
+            var form=document.getElementById("form");
 
             function weatherForecast()
             {
                 var dateInput = document.getElementById("date_select");
                 var timeInput = document.getElementById("time_select");
                 // Test call the test element to show concatenated string
-                document.getElementById("display_test").innerHTML = dateInput.value + " " + timeInput.value;
+                // document.getElementById("display_test").innerHTML = dateInput.value + " " + timeInput.value;
                 $.getJSON($SCRIPT_ROOT + '/plan_your_trip_weather_forecast', {
                     post: dateInput.value + " " + timeInput.value
                 }, function(data) {
                     var response_4=({{ data|safe }})
                     var response_4 = data;
-                    document.getElementById("display_test").innerHTML = response_4[0] 
-                }) 
+                    if (response_4 == null) {
+                      document.getElementById("display_test").innerHTML = 'Please select a valid time.';
+                    } else {
+                      form.innerHTML = '<div class="inputs"><div id="from"><span>FROM:</span><input id="searchTextField3" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize3(' + response_4[0] + ',' + response_4[1] + ',' + response_4[2] + ')"/></div><div id="to"><span>TO:</span><input id="searchTextField4" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize4()" /><p id="display_test"></p></div></div>';
+                      document.getElementById("display_test").innerHTML = response_4[0];
+                    }
+                    // pass response_4 through initialize html above and make it a single initialize function with a flag.
+                })
             }
-
-            // functions to change from real time to plan trip
-            var planTrip=document.getElementById("plantripBtn");
-            var realTime=document.getElementById("realtimeBtn");
-            var form=document.getElementById("form");
 
             var dateNew = new Date();
             Date.prototype.addDays = function(days) {
@@ -178,8 +183,13 @@
                     // issue with day+5 weather forecast --> only time from 12am to 6pm
 
                 var timeInput = document.getElementById("time_select");
+                var test = 0;
                 for (var j = 0; j < 24; j++) {
-                    timeInput.innerHTML += "<option value='" + j + ":00:00'>" + j + ":00</option>";
+                    if (j % 3 == 0 && j != 0) {
+                      test += 3;
+                    }
+                    var value = ('0' + test + ':00:00').slice(-8);
+                    timeInput.innerHTML += "<option value='" + value + "'>" + j + ":00</option>";
                 }
             }
 
@@ -233,7 +243,7 @@
 
             //document.getElementById("demo7").innerHTML= station_no_bikes_avail_stand;
             //document.getElementById("demo8").innerHTML= station_no_bikes_avail_stand.length;
-             //latest update following lines for individual marker update 
+             //latest update following lines for individual marker update
             var station_num=new Array(myObj.length);
             for(var i=0;i<myObj.length;i++)
             {
@@ -280,7 +290,7 @@
             var response=({{ data|safe }})
              var response = data;
 
-                  infowindow.setContent("Address: " + marker.addre +"<br>"+"Station No: " + response[1]+"<br>"+"Available Bikes: "+response[2]+"<br>"+"Available Bike Stands: "+response[3]); 
+                  infowindow.setContent("Address: " + marker.addre +"<br>"+"Station No: " + response[1]+"<br>"+"Available Bikes: "+response[2]+"<br>"+"Available Bike Stands: "+response[3]);
                     infowindow.open(map, marker); //This opens the infowindow at the marker
 
                 }
@@ -307,7 +317,7 @@
                 for (var i=0;i<response_2.length;i++)
                     {
 
-                       station_number[i]= response_2[i][0]; 
+                       station_number[i]= response_2[i][0];
 
                     }
 
@@ -328,7 +338,7 @@
                 }
                 getDistanceFromLatLonInKm(latitude,longitude,m,station_no_bikes_avail_stand);
              }
-        );   
+        );
     }
 
             //This function finds the closest station corresponding to the chosen source and destination by the user
@@ -458,6 +468,38 @@
                         //getDistanceFromLatLonInKm(latitude,longitude,m);
                     });
                 }
+
+                function initialize3() {
+                    var input = document.getElementById('searchTextField3');
+                    var autocomplete = new google.maps.places.Autocomplete(input);
+                    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                        var place = autocomplete.getPlace();
+                        var latitude = place.geometry.location.lat();
+                        var longitude=place.geometry.location.lng();
+                        var m=0;
+
+                        myfunction_get_updated_available_bikes_and_stands(latitude,longitude,m);
+                        //getDistanceFromLatLonInKm(latitude,longitude,m);
+                    });
+
+                }
+
+                function initialize4() {
+                    var input = document.getElementById('searchTextField4');
+                    var autocomplete = new google.maps.places.Autocomplete(input);
+                    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                        var place = autocomplete.getPlace();
+                        var latitude = place.geometry.location.lat();
+                        var longitude=place.geometry.location.lng();
+                        var m=0;
+
+                        myfunction_get_updated_available_bikes_and_stands(latitude,longitude,m);
+                        //getDistanceFromLatLonInKm(latitude,longitude,m);
+                    });
+
+                }
+
+
 //AIzaSyBi-bH5_sngxNibrgygRZDhmAv2fK5hzus(Working)//AIzaSyA3XfuMJJGzaU8TUItQM7XWD4esZdbpgtA (Blocked for now-will drop a mail to google)
                 google.maps.event.addDomListener(window, 'load', initialize);
 
