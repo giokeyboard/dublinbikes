@@ -21,98 +21,68 @@
             <div id="map"></div>
             <section id="sidebar">
                 <div id="message">
-                  <h2>WHO TOLD YOU IT IS ALL ABOUT LUCK?</h2>
-                  <p>Right now <span>64%</span> of all bikes<br>are being used. Let us predict the best stations for you.</p>
+                    <h2>WHO TOLD YOU IT IS ALL ABOUT LUCK?</h2>
+                    <p>Right now <span>64%</span> of all bikes<br>are being used. Let us predict the best stations for you.</p>
                 </div>
                 <div id="trip">
-                  <div id="tripButtons">
-                    <div class="tripBtn" id="realtimeBtn">
-                      <img src="{{ url_for('static',filename='img/destination.png') }}" alt="real time button">
-                      <span>REAL TIME</span>
+                    <div id="tripButtons">
+                        <div class="tripBtn" id="realtimeBtn">
+                            <img src="{{ url_for('static',filename='img/destination.png') }}" alt="real time button">
+                            <span>REAL TIME</span>
+                        </div>
+                        <div class="tripBtn" id="plantripBtn">
+                            <img src="{{ url_for('static',filename='img/calendar.png') }}" alt="plan your trip button">
+                            <span>PLAN YOUR TRIP</span>
+                        </div>
                     </div>
-                    <div class="tripBtn" id="plantripBtn">
-                      <img src="{{ url_for('static',filename='img/calendar.png') }}" alt="plan your trip button">
-                      <span>PLAN YOUR TRIP</span>
-                    </div>
-                  </div>
-                  <div id="form">
-                    <p>Need a bike right now?</p>
-                    <div class="inputs">
-                      <div id="from">
-                        <span>FROM:</span>
-                        <input id="searchTextField" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize()"/>
-                      </div>
-                      <div id="to">
-                        <span>TO:</span>
-                        <input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" />
-                      </div>
-                    </div>
+                    <div id="form">
+                        <p>Need a bike right now?</p>
+                        <div class="inputs">
+                            <div id="from">
+                                <span>FROM:</span>
+                                <input id="searchTextField" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize()"/>
+                            </div>
+                            <div id="to">
+                                <span>TO:</span>
+                                <input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" />
+                            </div>
+                        </div> 
 
-                    <!-- <div class="inputs">
-                      <div id="from">
-                        <span>FROM:</span>
-                        <input id="searchTextField" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize()"/>
-                      </div>
-                      <div id="to">
-                        <span>TO:</span>
-                        <input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" />
-                      </div>
-                      <div id="datetime">
-                        <div id="day">
-                          <span>DAY:</span>
-                          <select id="dayInput">
-                            <option value="today">today</option>
-                            <option value="nMonday">next monday</option>
-                            <option value="nTuesday">next tuesday</option>
-                            <option value="nWednesday">next wednesday</option>
-                            <option value="nThursday">next thursday</option>
-                            <option value="nFriday">next friday</option>
-                            <option value="nSaturday">next saturday</option>
-                            <option value="nSunday">next sunday</option>
-                          </select>
-                        </div>
-                        <div id="time">
-                          <span>TIME:</span>
-                          <input id="timeInput" type="time">
-                        </div>
-                      </div>
                     </div>
-                    <button id="submit" type="submit">SUBMIT</button> -->
-                    
-                  </div>
                 </div>
                 <div id="weather">
-                  <h2 id="date"></h2>
-                  <div id="conditions">
-                    <div class="condition">
-                      <img src="{{ url_for('static',filename='img/drizzle.png') }}" alt="forecast pic">
-                      <span id="coverage">{{data4[2]}}</span>
+                    <h2 id="date"></h2>
+                    <div id="conditions">
+                        <div class="condition">
+                            <img src="{{ url_for('static',filename='img/drizzle.png') }}" alt="forecast pic">
+                            <span id="coverage">{{data4[2]}}</span>
+                        </div>
+                        <div class="condition">
+                            <img src="{{ url_for('static',filename='img/thermometer.png') }}" alt="thermometer pic">
+                            <span  id="temp">{{data4[0]}} C</span>
+                        </div>
+                        <div class="condition">
+                            <img src="{{ url_for('static',filename='img/breeze.png') }}" alt="wind pic">
+                            <span id="wind">{{data4[1]}} km/h</span>
+                        </div>
                     </div>
-                    <div class="condition">
-                      <img src="{{ url_for('static',filename='img/thermometer.png') }}" alt="thermometer pic">
-                      <span  id="temp">{{data4[0]}} C</span>
-                    </div>
-                    <div class="condition">
-                      <img src="{{ url_for('static',filename='img/breeze.png') }}" alt="wind pic">
-                      <span id="wind">{{data4[1]}} km/h</span>
-                    </div>
-                  </div>
                 </div>
-              </section>
-              <div id="dropup">
+            </section>
+            <div id="dropup">
                 <p id="sourceTitle"></p>
                 <p id="sourceList"></p>
                 <p id="destTitle"></p>
                 <p id="destList"></p>
-              </div>
+            </div>
         </main>
+
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> 
-        
+
         <script type=text/javascript>
         $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
         </script>
         <script>
-            
+
              // function to show the current date
             var today = new Date();
             var day = today.getDate();
@@ -124,7 +94,7 @@
 
             // function to call the weather forecast route every 5000 sec
            var myVar=setInterval(myTimer,100000);
-           
+
             function myTimer()
             {
                 $.getJSON($SCRIPT_ROOT + '/weather', {
@@ -135,12 +105,10 @@
                     document.getElementById("coverage").innerHTML = response_3[2];
                     document.getElementById("temp").innerHTML = response_3[0] + "°C";
                     document.getElementById("wind").innerHTML = response_3[1] + "km/h";
-                })
-                
-                
+                }) 
             }
-            
-            
+
+
             /*
                  setTimeout(function() {
                 $.getJSON($SCRIPT_ROOT + '/weather', {
@@ -154,20 +122,65 @@
                 })
                      refresh();
             }, 2000); 
-                
-            
+
+
          */
-            
-            
+
+
+            function weatherForecast()
+            {
+                var dateInput = document.getElementById("date_select");
+                var timeInput = document.getElementById("time_select");
+                // Test call the test element to show concatenated string
+                document.getElementById("display_test").innerHTML = dateInput.value + " " + timeInput.value;
+                $.getJSON($SCRIPT_ROOT + '/plan_your_trip_weather_forecast', {
+                    post: dateInput.value + " " + timeInput.value
+                }, function(data) {
+                    var response_4=({{ data|safe }})
+                    var response_4 = data;
+                    document.getElementById("display_test").innerHTML = response_4[0] 
+                }) 
+            }
+
             // functions to change from real time to plan trip
             var planTrip=document.getElementById("plantripBtn");
             var realTime=document.getElementById("realtimeBtn");
             var form=document.getElementById("form");
+
+            var dateNew = new Date();
+            Date.prototype.addDays = function(days) {
+                var date = new Date(this.valueOf());
+                date.setDate(date.getDate() + days);
+                return date;
+            }
+            var dateNew1 = dateNew.addDays(1);
+            var dateNew2 = dateNew.addDays(2);
+            var dateNew3 = dateNew.addDays(3);
+            var dateNew4 = dateNew.addDays(4);
+            var dateNew5 = dateNew.addDays(5);
+
+            // Had to add 1 to each month to fix problem with date (showing one month earlier)
+            var ourdate = dateNew.getFullYear() + "-" + ("0"+(dateNew.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew.getDate()).slice(-2);
+            var ourDate1 = dateNew1.getFullYear() + "-" + ("0"+(dateNew1.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew1.getDate()).slice(-2);
+            var ourDate2 = dateNew2.getFullYear() + "-" + ("0"+(dateNew2.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew2.getDate()).slice(-2);
+            var ourDate3 = dateNew3.getFullYear() + "-" + ("0"+(dateNew3.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew3.getDate()).slice(-2);
+            var ourDate4 = dateNew4.getFullYear() + "-" + ("0"+(dateNew4.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew4.getDate()).slice(-2);
+            var ourDate5 = dateNew5.getFullYear() + "-" + ("0"+(dateNew5.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew5.getDate()).slice(-2);
+
             planTrip.onclick=function() {
-              realTime.style.backgroundColor="#1a4a50";
-              planTrip.style.backgroundColor="#2c7c87";
-              form.innerHTML='<div class="inputs"><div id="from"><span>FROM:</span><input id="searchTextField" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize()"/></div><div id="to"><span>TO:</span><input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" /></div><div id="datetime"><div id="day"><span>DAY:</span><select id="dayInput"><option value="today">today</option><option value="nMonday">next monday</option><option value="nTuesday">next tuesday</option><option value="nWednesday">next wednesday</option><option value="nThursday">next thursday</option><option value="nFriday">next friday</option><option value="nSaturday">next saturday</option><option value="nSunday">next sunday</option></select></div><div id="time"><span>TIME:</span><input id="timeInput" type="time"></div></div></div><button id="submit" type="submit">SUBMIT</button>';
-              form.style.paddingTop="35px";
+                realTime.style.backgroundColor="#1a4a50";
+                planTrip.style.backgroundColor="#2c7c87";
+                form.innerHTML='<div class="inputs"><span id="date_input">DATE:</span><select id="date_select"></select><span id="time">TIME:</span><select id="time_select"></select><button id="submit" type="submit" onclick="weatherForecast()">SUBMIT</button></div>'+'<p id="display_test"></p>';
+                form.style.paddingTop="35px";
+                var dateInput = document.getElementById("date_select");
+                dateInput.innerHTML += "<option value='"+ourdate+"'>"+ourdate+"</option><option value='"+ourDate1+"'>"+ourDate1+"</option><option value='"+ourDate2+"'>"+ourDate2+"</option><option value='"+ourDate3+"'>"+ourDate3+"</option><option value='"+ourDate4+"'>"+ourDate4+"</option>"
+                    //<option value='"+ourDate5+"'>"+ourDate5+"</option>";
+                    // issue with day+5 weather forecast --> only time from 12am to 6pm
+
+                var timeInput = document.getElementById("time_select");
+                for (var j = 0; j < 24; j++) {
+                    timeInput.innerHTML += "<option value='" + j + ":00:00'>" + j + ":00</option>";
+                }
             }
 
             realTime.onclick=function() {
@@ -179,7 +192,7 @@
 
             // To get data from flask
             var myObj={{ data|tojson }};
-            
+
 
             // document.getElementById("demo7").innerHTML=myObj2;
 
@@ -207,7 +220,7 @@
                     latlong[i]=[lat[i],long[i]];
                 }
 
-            
+
 
     //To fetch the list of station names
             var address_2=new Array(myObj.length);
@@ -217,7 +230,7 @@
                 address_2[i]=myObj[i][0];
                // static_station_no[i]=myObj[i][5];
                 }
-        
+
             //document.getElementById("demo7").innerHTML= station_no_bikes_avail_stand;
             //document.getElementById("demo8").innerHTML= station_no_bikes_avail_stand.length;
              //latest update following lines for individual marker update 
@@ -256,50 +269,50 @@
 
                 //This function created listener listens for click on a marker to show information specific to that marker
                 google.maps.event.addListener(marker, 'click', function () {
-                    
+
                     myFunction(marker.station_no);
                 function myFunction(x) {
                 $.getJSON($SCRIPT_ROOT + '/update', {
                     post: x
                 }, function(data) {
-             
-           
+
+
             var response=({{ data|safe }})
              var response = data;
 
                   infowindow.setContent("Address: " + marker.addre +"<br>"+"Station No: " + response[1]+"<br>"+"Available Bikes: "+response[2]+"<br>"+"Available Bike Stands: "+response[3]); 
                     infowindow.open(map, marker); //This opens the infowindow at the marker
-                    
+
                 }
                 );
             }
-                    
+
                      });
             }
-            
+
              function myfunction_get_updated_available_bikes_and_stands(latitude,longitude,m)
             {
                 var latitude=latitude;
                 var longitude=longitude;
                 var m=m;
-                
+
                 $.getJSON($SCRIPT_ROOT + '/all_available_details', {
                     post: 0
                 }, function(data) {
-             
+
                 var response_2=({{ data|safe }})
                 var response_2 = data;
                 var station_number=new Array(response_2.length);
-               
+
                 for (var i=0;i<response_2.length;i++)
                     {
-                        
+
                        station_number[i]= response_2[i][0]; 
-                        
+
                     }
-                
+
                 var common_station_no = station_number.filter(id => station_num.includes(id));  //station_num is the static station number received from table station
-                   
+
                 var station_no_bikes_avail_stand=new Array(common_station_no.length);
                 for(var i=0;i<common_station_no.length;i++)
                 {
@@ -424,7 +437,7 @@
                         var latitude = place.geometry.location.lat();
                         var longitude=place.geometry.location.lng();
                         var m=0;
-                        
+
                         myfunction_get_updated_available_bikes_and_stands(latitude,longitude,m);
                         //getDistanceFromLatLonInKm(latitude,longitude,m);
                     });
@@ -445,12 +458,12 @@
                         //getDistanceFromLatLonInKm(latitude,longitude,m);
                     });
                 }
-
+//AIzaSyBi-bH5_sngxNibrgygRZDhmAv2fK5hzus(Working)//AIzaSyA3XfuMJJGzaU8TUItQM7XWD4esZdbpgtA (Blocked for now-will drop a mail to google)
                 google.maps.event.addDomListener(window, 'load', initialize);
 
         </script>
 
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3XfuMJJGzaU8TUItQM7XWD4esZdbpgtA&callback=myMap&libraries=places"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi-bH5_sngxNibrgygRZDhmAv2fK5hzus&callback=myMap&libraries=places"></script>
     </body>
 </html>

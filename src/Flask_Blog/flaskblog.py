@@ -22,7 +22,7 @@ def home():
         print('|  CONNECTED TO DATABASE  |')
         print('+=========================+')
     except Exception as e:
-        sys.exit('error',e)
+        sys.exit(e)
 
     cur = con.cursor()
     cur.execute("SELECT * FROM dublinbikes.station")
@@ -60,7 +60,7 @@ def update():
         print('|  CONNECTED TO DATABASE  |')
         print('+=========================+')
     except Exception as e:
-        sys.exit('error',e)
+        sys.exit(e)
     cur3 = con.cursor()
     sql_select_query = """SELECT * FROM (SELECT * FROM availability ORDER BY id DESC LIMIT 113)sub where number=%s"""
     cur3.execute(sql_select_query, (post, ))
@@ -91,7 +91,7 @@ def all_available_details():
         print('|  CONNECTED TO DATABASE  |')
         print('+=========================+')
     except Exception as e:
-        sys.exit('error',e)
+        sys.exit(e)
     cur2= con.cursor()
     cur2.execute("SELECT number,available_bikes,available_bike_stands FROM availability where ID in (SELECT max(ID) FROM (select * from (select * from availability order by id Desc limit 226) sub order by id asc)as T GROUP BY number )  order by ID")
     data2=cur2.fetchall()
@@ -121,7 +121,7 @@ def weather():
         print('|  CONNECTED TO DATABASE  |')
         print('+=========================+')
     except Exception as e:
-        sys.exit('error',e)
+        sys.exit(e)
     cur5= con.cursor()
     cur5.execute("SELECT temperature,wind_speed,cloud_coverage FROM (SELECT * FROM weather ORDER BY id DESC LIMIT 1)sub ")
     data5=cur5.fetchone()
@@ -134,6 +134,44 @@ def weather():
     
     return json.dumps(data5);
 
+@app.route("/plan_your_trip_weather_forecast", methods=['GET','POST'])
+def plan_your_trip_weather_forecast():
+    post = request.args.get('post', 0, type=str)
+    print(post)
+    post=str(post)
+    print(type(post))
+    import requests
+    def get_count(): #function to call the api
+        url = "http://api.openweathermap.org/data/2.5/forecast?id=7778677&APPID=a4822db1b5634c2e9e25209d1837cc69&units=metric"
+        r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'})
+
+        # Parse the JSON
+        data = r.json()
+        return data
+   
+    
+    def invoke_from_javascript(post):
+        value=get_count()
+        #inp1=input("Enter a date in yyyy-mm-dd hrs:00:00 ")
+        inp1=post
+        for i in range(0,len(value['list'])):
+            date=value['list'][i]['dt_txt']
+            type(date)
+            if(inp1==date):
+        
+                temp=value['list'][i]['main']['temp']
+                cloud=value['list'][i]['weather'][0]['main']
+                speed=value['list'][i]['wind']['speed']
+                list_data=(temp,cloud,speed)
+                print(temp)
+                print(cloud)
+                print(speed)
+                return list_data
+    #print(date)
+
+
+    data6=invoke_from_javascript(post)
+    return json.dumps(data6);
 
 
 
