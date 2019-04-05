@@ -189,12 +189,64 @@ def prediction_model():
     nearest_station_no=int(post[0])
     second_nearest_station_no=int(post[1])
     temp=int(post[2])
-    cloud_cover=post[3]
+    #cloud_cover=post[3]
     wind_s= int(post[4])
     flag = int(post[5])
+
+    day_week = post[6]
+    hr_day = int(post[7])
+
+    fri_flag=mon_flag=sat_flag=sun_flag=thur_flag=tue_flag=wed_flag=0
+
+    clear_flag=clo_flag=drizzle_flag=fog_flag=mis_flag=rain_flag=0
+    
+    
+
+    if(day_week=="Friday"):
+        fri_flag = 1
+
+    if(day_week=="Monday"):
+        mon_flag = 1
+
+    if(day_week=="Saturday"):
+        sat_flag = 1
+
+    if(day_week=="Sunday"):
+        sun_flag = 1
+
+    if(day_week=="Thursday"):
+        thur_flag = 1
+
+    if(day_week=="Tuesday"):
+        tue_flag = 1
+
+    if(day_week=="Wednesday"):
+        wed_flag = 1
+
+    cloud_cover=post[3]
+    
+    if(cloud_cover=="Clear"):
+        clear_flag = 1
+        
+    if(cloud_cover=="Clouds"):
+        clo_flag = 1
+
+    if(cloud_cover=="Drizzle"):
+        drizzle_flag = 1
+
+    if(cloud_cover=="Fog"):
+        fog_flag = 1
+
+    if(cloud_cover=="Mist"):
+        mis_flag = 1
+
+    if(cloud_cover=="Rain"):
+        rain_flag = 1
+
+    
     if(flag==0):
 
-        predict_request = [[nearest_station_no,15,35,temp,wind_s,1,0,0,0,0,0,0,0,0,0,0,0,1]]
+        predict_request = [[nearest_station_no,hr_day,0,temp,wind_s,fri_flag,mon_flag,sat_flag,sun_flag,thur_flag,tue_flag,wed_flag,clear_flag,clo_flag,drizzle_flag,fog_flag,mis_flag,rain_flag]]
         #predict_request = np.array(predict_request)
         print(predict_request)
         #predicted_available_bikes = random_forest.predict([[np.array(predict_request)]])
@@ -202,16 +254,16 @@ def prediction_model():
         predicted_available_bikes = random_forest.predict(predict_request)
         print("Predicted available bikes for nearest station is",int(predicted_available_bikes[0]))
 
-        predict_request = [[second_nearest_station_no,18,35,temp,wind_s,1,0,0,0,0,0,0,0,0,0,0,0,1]]
+        predict_request = [[second_nearest_station_no,hr_day,0,temp,wind_s,fri_flag,mon_flag,sat_flag,sun_flag,thur_flag,tue_flag,wed_flag,clear_flag,clo_flag,drizzle_flag,fog_flag,mis_flag,rain_flag]]
         print(predict_request)
-        predicted_available_bikes = random_forest.predict(predict_request)
-        print("Predicted available bikes for second nearest station is",int(predicted_available_bikes[0]))
+        predicted_available_bikes_2 = random_forest.predict(predict_request)
+        print("Predicted available bikes for second nearest station is",int(predicted_available_bikes_2[0]))
 
         #print(type(predicted_available_bikes))
 
     if(flag==1):
 
-        predict_request = [[nearest_station_no,15,35,temp,wind_s,1,0,0,0,0,0,0,0,0,0,0,0,1]]
+        predict_request = [[nearest_station_no,hr_day,0,temp,wind_s,fri_flag,mon_flag,sat_flag,sun_flag,thur_flag,tue_flag,wed_flag,clear_flag,clo_flag,drizzle_flag,fog_flag,mis_flag,rain_flag]]
         #predict_request = np.array(predict_request)
         print(predict_request)
         #predicted_available_bikes = random_forest.predict([[np.array(predict_request)]])
@@ -219,14 +271,14 @@ def prediction_model():
         predicted_available_bikes = random_forest_stands.predict(predict_request)
         print("Predicted available bike stands for nearest station is",int(predicted_available_bikes[0]))
 
-        predict_request = [[second_nearest_station_no,18,35,temp,wind_s,1,0,0,0,0,0,0,0,0,0,0,0,1]]
+        predict_request = [[second_nearest_station_no,hr_day,0,temp,wind_s,fri_flag,mon_flag,sat_flag,sun_flag,thur_flag,tue_flag,wed_flag,clear_flag,clo_flag,drizzle_flag,fog_flag,mis_flag,rain_flag]]
         print(predict_request)
-        predicted_available_bikes = random_forest_stands.predict(predict_request)
-        print("Predicted available bike stands for second nearest station is",int(predicted_available_bikes[0]))
+        predicted_available_bikes_2 = random_forest_stands.predict(predict_request)
+        print("Predicted available bike stands for second nearest station is",int(predicted_available_bikes_2[0]))
         
     
     
-    data_from_model=30
+    data_from_model=[int(predicted_available_bikes[0]),int(predicted_available_bikes_2[0])]
     return json.dumps(data_from_model);
 
 
