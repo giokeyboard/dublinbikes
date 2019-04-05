@@ -1,6 +1,11 @@
 from flask import Flask, render_template,json,request
 app = Flask(__name__)
 
+# Load the model
+import pickle
+random_forest = pickle.load(open('final_prediction.pickle','rb'))
+random_forest_stands = pickle.load(open("final_prediction_bike_stands.pickle","rb"))
+
 @app.route("/")
 @app.route("/home")
 def home():
@@ -173,7 +178,56 @@ def plan_your_trip_weather_forecast():
     data6=invoke_from_javascript(post)
     return json.dumps(data6);
 
+@app.route("/prediction_model", methods=['GET','POST'])
+def prediction_model():
+    import numpy as np
+    post = request.args.get('post',0,type=str)
+    post=post.split()
+    print("Data to be sent to prediction model ",post)
+   
+    print(type(post))
+    nearest_station_no=int(post[0])
+    second_nearest_station_no=int(post[1])
+    temp=int(post[2])
+    cloud_cover=post[3]
+    wind_s= int(post[4])
+    flag = int(post[5])
+    if(flag==0):
 
+        predict_request = [[nearest_station_no,15,35,temp,wind_s,1,0,0,0,0,0,0,0,0,0,0,0,1]]
+        #predict_request = np.array(predict_request)
+        print(predict_request)
+        #predicted_available_bikes = random_forest.predict([[np.array(predict_request)]])
+    
+        predicted_available_bikes = random_forest.predict(predict_request)
+        print("Predicted available bikes for nearest station is",int(predicted_available_bikes[0]))
+
+        predict_request = [[second_nearest_station_no,18,35,temp,wind_s,1,0,0,0,0,0,0,0,0,0,0,0,1]]
+        print(predict_request)
+        predicted_available_bikes = random_forest.predict(predict_request)
+        print("Predicted available bikes for second nearest station is",int(predicted_available_bikes[0]))
+
+        #print(type(predicted_available_bikes))
+
+    if(flag==1):
+
+        predict_request = [[nearest_station_no,15,35,temp,wind_s,1,0,0,0,0,0,0,0,0,0,0,0,1]]
+        #predict_request = np.array(predict_request)
+        print(predict_request)
+        #predicted_available_bikes = random_forest.predict([[np.array(predict_request)]])
+    
+        predicted_available_bikes = random_forest_stands.predict(predict_request)
+        print("Predicted available bike stands for nearest station is",int(predicted_available_bikes[0]))
+
+        predict_request = [[second_nearest_station_no,18,35,temp,wind_s,1,0,0,0,0,0,0,0,0,0,0,0,1]]
+        print(predict_request)
+        predicted_available_bikes = random_forest_stands.predict(predict_request)
+        print("Predicted available bike stands for second nearest station is",int(predicted_available_bikes[0]))
+        
+    
+    
+    data_from_model=30
+    return json.dumps(data_from_model);
 
 
 if __name__=='__main__':
