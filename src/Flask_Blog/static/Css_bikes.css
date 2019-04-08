@@ -23,16 +23,27 @@ main {
   z-index: 1;
   font-size: 1.4em;
   padding: 0 10px;
-  border: 1px solid white;
+  border: 1px solid #eef0f2;
   max-width: 300px;
 }
+
+#sourceList span, #destList span {
+  color: yellowgreen;
+}
+
+#sourceList span:hover, #destList span:hover {
+  cursor: pointer;
+}
+
 
 #sourceTitle, #destTitle {
   font-weight: bold;
 }
 
-#dropup span {
-  color: yellowgreen;
+.availableBrackets {
+  font-weight: lighter;
+  font-size: 0.9em;
+  color: white;
 }
 
 /* Header */
@@ -74,7 +85,7 @@ main {
 /* Map */
 #map {
   width: 100%;
-  height: 70vh;
+  min-height: 70vh;
   color: grey;
 }
 
@@ -83,6 +94,7 @@ main {
 #sidebar {
   display: flex;
   height: 25vh;
+  padding-top: 10px;
 }
 
 /* Message */
@@ -91,7 +103,7 @@ main {
 }
 
 #message h2 {
-  font-size: 2.2em;
+  font-size: 2.1em;
   text-align: right;
   font-weight: normal;
   width: 60%;
@@ -291,4 +303,167 @@ main {
   font-size: 1.3em;
   text-align: center;
   display: block;
+}
+
+/* MEDIA QUERIES ------------------------------ */
+
+@media screen and (max-width: 1160px) and (min-width: 990px) {
+  body {
+    font-size: 9px;
+  }
+
+  #from input, #to input {
+    width: 70%;
+  }
+
+  #message p {
+    font-size: 1.4em;
+  }
+}
+
+@media screen and (max-width: 989px) and (min-width: 550px) {
+  #headbar h1 {
+    font-size: 1.6em;
+  }
+
+  #map {
+    min-height: 60vh;
+  }
+
+  #sidebar {
+    flex-wrap: wrap;
+    height: auto;
+  }
+
+  #message, #weather {
+    width: 50%;
+    position: relative;
+  }
+
+  #trip {
+    order: 3;
+    width: 100%;
+    margin-top: 30px;
+  }
+
+  #trip:after, #trip:before{
+    width: 0px;
+  }
+
+  #message::after {
+    content:'';
+    width: 2px;
+    height: 150px;
+    background: #eef0f2;
+    position: absolute;
+    right: 0;
+    top: 20px;
+  }
+}
+
+@media screen and (max-width: 749px){
+  #headbar h1 {
+    font-size: 1.5em;
+  }
+
+  #message p {
+    font-size: 1.3em;
+  }
+
+  #dropup {
+    display: none;
+    position: absolute;
+    left: 10px;
+    top: 20%;
+    background-color: #1a4a50;
+    z-index: 1;
+    font-size: 1.1em;
+    padding: 0 10px;
+    border: 1px solid #eef0f2;
+    max-width: 100px;
+  }
+}
+
+@media screen and (max-width: 549px) {
+  #firstUndLn {
+    width: 35%;
+  }
+
+  #secondUndLn {
+    width: 35%;
+  }
+
+  #map {
+    min-height: 70vh;
+  }
+
+  #sidebar {
+    flex-flow: column;
+    height: auto;
+    font-size: 0.8em;
+  }
+
+  #message, #weather {
+    width: 100%;
+    padding-bottom: 15px;
+  }
+
+  #message h2, #message p {
+    text-align: center;
+  }
+
+  #trip {
+    width: 100%;
+    flex-flow: column;
+  }
+
+  #tripButtons {
+    display: flex;
+    width: 100%;
+  }
+
+  #plantripBtn {
+    margin-bottom: 17px;
+  }
+
+  #form {
+    width: 100%;
+  }
+
+  #from input, #to input {
+    width: 60%;
+  }
+
+  #trip:after {
+    width: 0px;
+  }
+
+  #trip:before {
+    width: 0px;
+  }
+
+  #weather {
+    position: relative;
+  }
+
+  #weather:before {
+    content:'';
+    height: 2px;
+    width: auto;
+    background: #eef0f2;
+    position: absolute;
+    right: 25px;
+    left: 25px;
+    top: 0px;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  #firstUndLn {
+    width: 25%;
+  }
+
+  #secondUndLn {
+    width: 25%;
+  }
 }
