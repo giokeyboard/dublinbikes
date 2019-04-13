@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>Dublin Bike App</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='Css_bikes.css') }}">
+        <link href="https://fonts.googleapis.com/css?family=Exo+2:500,700" rel="stylesheet">
+    </head>
+    <body>
+        <header>
+            <div id="headbar">
+                <img src= "{{ url_for('static',filename='img/bike.png') }}" alt="bike pic">
+                <span id="firstUndLn"></span>
+                <h1>DUBLIN BIKES MAPPER</h1>
+                <span id="secondUndLn"></span>
+                <img src="{{ url_for('static',filename='img/marker.png') }}" alt="marker pic">
+            </div>
+        </header>
+        <main>
+            <div id="map"></div>
+            <section id="sidebar">
+                <div id="message">
+                    <h2>WHO TOLD YOU IT IS ALL ABOUT LUCK?</h2>
+                    <p>There are over <span>1500</span> bikes available around the city. Let us predict the best stations for you.</p>
+                    <p id="test1"></p>
+                    <p id="test2"></p>
+                </div>
+                <div id="trip">
+                    <div id="tripButtons">
+                        <div class="tripBtn" id="realtimeBtn">
+                            <img src="{{ url_for('static',filename='img/destination.png') }}" alt="real time button">
+                            <span>REAL TIME</span>
+                        </div>
+                        <div class="tripBtn" id="plantripBtn">
+                            <img src="{{ url_for('static',filename='img/calendar.png') }}" alt="plan your trip button">
+                            <span>PLAN YOUR TRIP</span>
+                        </div>
+                    </div>
+                    <div id="form">
+                        <p>Need a bike right now?</p>
+                        <div class="inputs">
+                            <div id="from">
+                                <span>FROM:</span>
+                                <input id="searchTextField" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize()"/>
+                            </div>
+                            <div id="to">
+                                <span>TO:</span>
+                                <input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="weather">
+                    <h2 id="date"></h2>
+                    <div id="conditions">
+                        <div class="condition">
+                            <img src="{{ url_for('static',filename='img/drizzle.png') }}" alt="forecast pic">
+                            <span id="coverage">Rainy</span>
+                        </div>
+                        <div class="condition">
+                            <img src="{{ url_for('static',filename='img/thermometer.png') }}" alt="thermometer pic">
+                            <span  id="temp">5.6 C</span>
+                        </div>
+                        <div class="condition">
+                            <img src="{{ url_for('static',filename='img/breeze.png') }}" alt="wind pic">
+                            <span id="wind">13.6 km/h</span>
+                        </div>
+                    </div>
+                </div>
+           </section>
+            <div id="dropup">
+                <p id="sourceTitle"></p>
+                <p id="sourceList"></p>
+                <p id="destTitle"></p>
+                <p id="destList"></p>
+            </div>
+        </main>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+        <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+        </script>
+
+        <script>
+             // function to show the current date
+            var today = new Date();
+            var day = today.getDate();
+            var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            var month = monthNames[today.getMonth()];
+            var year = today.getFullYear();
+            var date = day + " " + month + " " + year + "<br>DUBLIN, IRELAND";
+            document.getElementById("date").innerHTML = date;
+            // function to call the weather forecast route every 5000 sec
+           var myVar=setInterval(myTimer,100000);
+            function myTimer()
+            {
+                $.getJSON($SCRIPT_ROOT + '/weather', {
+                    post: 0
+                }, function(data) {
+                     var response_3=({{ data|safe }})
+                    var response_3 = data;
+                    document.getElementById("coverage").innerHTML = response_3[2];
+                    document.getElementById("temp").innerHTML = response_3[0] + "°C";
+                    document.getElementById("wind").innerHTML = response_3[1] + "km/h";
+                })
+            }
+            // functions to change from real time to plan trip
+            var planTrip=document.getElementById("plantripBtn");
+            var realTime=document.getElementById("realtimeBtn");
+            var form=document.getElementById("form");
+            function weatherForecast()
+            {
+                var dateInput = document.getElementById("date_select");
+                var timeInput = document.getElementById("time_select");
+                // Test call the test element to show concatenated string
+                // document.getElementById("display_test").innerHTML = dateInput.value + " " + timeInput.value;
+                $.getJSON($SCRIPT_ROOT + '/plan_your_trip_weather_forecast', {
+                    post: dateInput.value + " " + timeInput.value
+                }, function(data) {
+                    var response_4=({{ data|safe }})
+                    var response_4 = data;
+                    if (response_4 == null) {
+                      document.getElementById("display_test").innerHTML = 'Please select a valid time.';
+                    } else {
+                        var x= response_4[0];
+                        var y= response_4[1];
+                        var z= response_4[2];
+                        var content = '\''  + x + "," + y + "," + z + "," + dateInput.value + "," + timeInput.value + '\'';
+                      form.innerHTML = '<div class="inputs"><div id="from"><span>FROM:</span><input id="searchTextField3" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize3(' + content + ')"/></div><div id="to"><span>TO:</span><input id="searchTextField4" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize4(' + content + ')" /></div></div>';
+                     // document.getElementById("display_test").innerHTML = response_4[0];
+                    }
+                    // pass response_4 through initialize html above and make it a single initialize function with a flag.
+                })
+            }
+            var dateNew = new Date();
+            Date.prototype.addDays = function(days) {
+                var date = new Date(this.valueOf());
+                date.setDate(date.getDate() + days);
+                return date;
+            }
+            var dateNew1 = dateNew.addDays(1);
+            var dateNew2 = dateNew.addDays(2);
+            var dateNew3 = dateNew.addDays(3);
+            var dateNew4 = dateNew.addDays(4);
+            var dateNew5 = dateNew.addDays(5);
+            // Had to add 1 to each month to fix problem with date (showing one month earlier)
+            var ourdate = dateNew.getFullYear() + "-" + ("0"+(dateNew.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew.getDate()).slice(-2);
+            var ourDate1 = dateNew1.getFullYear() + "-" + ("0"+(dateNew1.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew1.getDate()).slice(-2);
+            var ourDate2 = dateNew2.getFullYear() + "-" + ("0"+(dateNew2.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew2.getDate()).slice(-2);
+            var ourDate3 = dateNew3.getFullYear() + "-" + ("0"+(dateNew3.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew3.getDate()).slice(-2);
+            var ourDate4 = dateNew4.getFullYear() + "-" + ("0"+(dateNew4.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew4.getDate()).slice(-2);
+            var ourDate5 = dateNew5.getFullYear() + "-" + ("0"+(dateNew5.getMonth()+1)).slice(-2) + "-" + ("0"+dateNew5.getDate()).slice(-2);
+            planTrip.onclick=function() {
+                document.getElementById("sourceTitle").innerHTML='';
+                document.getElementById("sourceList").innerHTML='';
+                document.getElementById("destTitle").innerHTML='';
+                document.getElementById("destList").innerHTML='';
+                document.getElementById("dropup").style.display = "none";
+                realTime.style.backgroundColor="#1a4a50";
+                planTrip.style.backgroundColor="#2c7c87";
+                form.innerHTML='<div class="inputs"><span id="date_input">DATE:</span><select id="date_select"></select><span id="time">TIME:</span><select id="time_select"></select><button id="submit" type="submit" onclick="weatherForecast()">SUBMIT</button></div>'+'<p id="display_test"></p>';
+                form.style.paddingTop="35px";
+                var dateInput = document.getElementById("date_select");
+                dateInput.innerHTML += "<option value='"+ourdate+"'>"+ourdate+"</option><option value='"+ourDate1+"'>"+ourDate1+"</option><option value='"+ourDate2+"'>"+ourDate2+"</option><option value='"+ourDate3+"'>"+ourDate3+"</option><option value='"+ourDate4+"'>"+ourDate4+"</option>"
+                    //<option value='"+ourDate5+"'>"+ourDate5+"</option>";
+                    // issue with day+5 weather forecast --> only time from 12am to 6pm
+                var timeInput = document.getElementById("time_select");
+                var test = 0;
+                for (var j = 0; j < 24; j++) {
+                    if (j % 3 == 0 && j != 0) {
+                      test += 3;
+                    }
+                    var value = ('0' + test + ':00:00').slice(-8);
+                    timeInput.innerHTML += "<option value='" + value + "'>" + j + ":00</option>";
+                }
+            }
+            realTime.onclick=function() {
+              document.getElementById("sourceTitle").innerHTML='';
+              document.getElementById("sourceList").innerHTML='';
+              document.getElementById("destTitle").innerHTML='';
+              document.getElementById("destList").innerHTML='';
+              document.getElementById("dropup").style.display = "none";
+              realTime.style.backgroundColor="#2c7c87";
+              planTrip.style.backgroundColor="#1a4a50";
+              form.innerHTML='<p>Need a bike right now?</p><div class="inputs"><div id="from"><span>FROM:</span><input id="searchTextField" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize()"/></div><div id="to"><span>TO:</span><input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" /></div></div>'
+              form.style.paddingTop="0px";
+            }
+            //var myObj=[];
+            //var latlong;
+          //  var map;
+          //  var station_num;
+           // var address_2;
+             
+                
+                
+            
+           
+            var infowindow;
+            var infoWindow2;
+            var markersArray = [];
+            //To set up the map with desired properties
+            function myMap() {
+                var myCenter = {lat: 53.349605, lng:-6.264175 };
+                var mapCanvas = document.getElementById("map");
+                var mapOptions = {center: myCenter, zoom: 14};
+                var map = new google.maps.Map(mapCanvas, mapOptions);
+                infowindow = new google.maps.InfoWindow({
+                    maxWidth: 355
+                    });
+                
+                testing(map);
+               
+                
+                
+              //  document.getElementById("test").innerHTML=testing();
+               
+                
+                
+                    
+                
+                
+                infoWindow2 = new google.maps.InfoWindow;
+                 // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            };
+
+            infoWindow2.setPosition(pos);
+            infoWindow2.setContent('Your Current Location');
+            infoWindow2.open(map);
+            map.setCenter(pos);
+          }, function() {
+            handleLocationError(true, infoWindow2, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow2, map.getCenter());
+        }
+      }
+            
+            function handleLocationError(browserHasGeolocation, infoWindow2, pos) {
+        infoWindow2.setPosition(pos);
+        infoWindow2.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+        infoWindow2.open(map);
+      }
+            
+            function popupDirections(marker) {
+                //This function created listener listens for click on a marker to show information specific to that marker
+                   google.maps.event.addListener(marker, 'click', function () {
+                    myFunction(marker.station_no);
+                function myFunction(x) {
+                  $.getJSON($SCRIPT_ROOT + '/update', {
+                    post: x
+                  }, function(data) {
+                    var response=({{ data|safe }})
+                    var response = data;
+                    infowindow.setContent("Address: " + marker.addre +"<br>"+"Station No: " + response[1]+"<br>"+"Available Bikes: "+response[2]+"<br>"+"Available Bike Stands: "+response[3]);
+                    infowindow.open(map, marker); //This opens the infowindow at the marker
+                  }
+                  );
+                }
+                });
+            }
+            
+            function testing(map)
+                {
+                    $.getJSON($SCRIPT_ROOT + '/testing', {
+                    post: 0
+                }, function(data2) {
+                    
+                        
+                    var response_testing= data2;
+                  // var testing_2={{data2|safe}};
+                     myObj=response_testing;
+             //   document.getElementById("test1").innerHTML= "Data2"+data2;
+                 //      document.getElementById("test1").innerHTML= myObj;
+                    pass_data(myObj,map);
+                }
+            );
+            }
+                     
+                 //   var testing_2={{data2}};
+            // To get data from flask
+            //var myObj={{ data|tojson }};+
+            // document.getElementById("demo7").innerHTML=myObj2;
+            
+                        
+            function pass_data(myObj,map)
+            {
+                   var lat=new Array(myObj.length);
+            var long=new Array(myObj.length);
+            //To get the list of latitude of stations
+            for(var i=0;i<myObj.length;i++)
+            {
+              lat[i]=myObj[i][6];
+            }
+            //To get the list of longitude of stations
+            for(var i=0;i<myObj.length;i++)
+            {
+                long[i]=myObj[i][7];
+            }
+            //To get the list of latitude and longitude of stations as a tuple
+            var latlong=new Array(myObj.length);
+            for(var i=0;i<myObj.length;i++)
+                {
+                    latlong[i]=[lat[i],long[i]];
+                }
+            //To fetch the list of station names
+            var address_2=new Array(myObj.length);
+            var static_station_no=new Array(myObj.length);
+            for(var i=0;i<myObj.length;i++)
+                {
+                address_2[i]=myObj[i][0];
+               // static_station_no[i]=myObj[i][5];
+                }
+            //document.getElementById("demo7").innerHTML= station_no_bikes_avail_stand;
+            //document.getElementById("demo8").innerHTML= station_no_bikes_avail_stand.length;
+             //latest update following lines for individual marker update
+            var station_num=new Array(myObj.length);
+            for(var i=0;i<myObj.length;i++)
+            {
+                station_num[i]=myObj[i][5];
+             }
+            
+             for(var j=0;j<latlong.length;j++)
+                {
+                    var marker=new google.maps.Marker({
+                    position:new google.maps.LatLng(latlong[j][0],latlong[j][1]),
+                    map:map,
+                    addre:address_2[j],
+                    station_no:station_num[j]
+                  });
+                popupDirections(marker);
+                markersArray.push(marker);
+                }
+                
+                
+            }
+                  
+         
+                
+               
+            // function to open marker infowindow if user clicks on station results
+            function clickMarker(stationName) {
+              for (index in markersArray) {
+                if (markersArray[index].addre == stationName) {
+                  google.maps.event.trigger(markersArray[index], 'click');
+                }
+              }
+            }
+             function myfunction_get_updated_available_bikes_and_stands(latitude,longitude,m)
+            {
+                var latitude=latitude;
+                var longitude=longitude;
+                var m=m;
+                $.getJSON($SCRIPT_ROOT + '/all_available_details', {
+                    post: 0
+                }, function(data) {
+                var response_2=({{ data|safe }})
+                var response_2 = data;
+                    /*
+                var station_number=new Array(response_2.length);
+                for (var i=0;i<response_2.length;i++)
+                    {
+                       station_number[i]= response_2[i][0];
+                    }
+                    */
+             //   var common_station_no = station_number.filter(id => station_num.includes(id));  //station_num is the static station number received from table station
+                     var common_station_no=new Array(response_2.length);
+                    for (var i=0;i<response_2.length;i++)
+                    {
+                       common_station_no[i]= response_2[i][0];
+                    }
+                    
+                var station_no_bikes_avail_stand=new Array(common_station_no.length);
+                for(var i=0;i<common_station_no.length;i++)
+                {
+                    
+                                station_no_bikes_avail_stand[i]=[response_2[i][0],response_2[i][1],response_2[i][2]];
+                                }
+                    
+            var address_2=new Array(common_station_no.length);
+            
+            for(var i=0;i<common_station_no.length;i++)
+                {
+                address_2[i]=response_2[i][3];
+               // static_station_no[i]=myObj[i][5];
+                }
+                    
+            var lat=new Array(common_station_no.length);
+            var long=new Array(common_station_no.length);
+            //To get the list of latitude of stations
+            for(var i=0;i<common_station_no.length;i++)
+            {
+              lat[i]=response_2[i][4];
+            }
+            //To get the list of longitude of stations
+            for(var i=0;i<common_station_no.length;i++)
+            {
+                long[i]=response_2[i][5];
+            }
+            //To get the list of latitude and longitude of stations as a tuple
+            var latlong=new Array(common_station_no.length);
+            for(var i=0;i<common_station_no.length;i++)
+                {
+                    latlong[i]=[lat[i],long[i]];
+                }
+                        
+                
+                getDistanceFromLatLonInKm(latitude,longitude,m,station_no_bikes_avail_stand,address_2,latlong);
+             }
+        );
+    }
+            //This function finds the closest station corresponding to the chosen source and destination by the user
+            function getDistanceFromLatLonInKm(latitude,longitude,m,station_no_bikes_avail_stand,address_2,latlong){
+                var x= latitude;
+                var y=longitude;
+                var closest_location;
+                var min=0;
+                var axis=0;
+                var value=0;
+                var dist_array=new Array(latlong.length);
+                for(var i=0;i<latlong.length;i++)
+                {
+                    axis=((x-latlong[i][0])*(x-latlong[i][0]))+((y-latlong[i][1])*(y-latlong[i][1]))
+                    value=Math.sqrt(axis);
+                    dist_array[i]=value;
+                }
+                    var min = Math.min.apply(Math, dist_array);
+                    var idx=dist_array.indexOf(Math.min.apply(null,dist_array));
+                    var idx_second_min_dist =dist_array.indexOf (Math.min.apply(null, dist_array.filter(n => n != min)));
+                    var nearest_station=address_2[idx];
+                    var second_nearest_station=address_2[idx_second_min_dist];
+                    if(m==0)
+                    {
+                        var bike_available_nearest_station= station_no_bikes_avail_stand[idx][1];
+                        var bike_available_second_near_station=station_no_bikes_avail_stand[idx_second_min_dist][1];
+                        if(bike_available_nearest_station>0 ||bike_available_second_near_station>0 )
+                            {
+                            //document.getElementById("demo4").innerHTML="the minimum distance is "+min;
+                            // document.getElementById("demo2").innerHTML="Nearest station to your source is: <b>"+nearest_station+"</b>.<br> "+"(Avaiable bikes: "+bike_available_nearest_station+")";
+                            //
+                            //  document.getElementById("demo4").innerHTML="Second nearest station to your souce is: <b>"+second_nearest_station+"</b>.<br> "+"(Avaiable bikes: "+bike_available_second_near_station+")";
+                              // document.getElementById("sourceTitle").innerHTML="Nearest stations to your source:"
+                              // document.getElementById("sourceList").innerHTML="1- <span>"+nearest_station+"</span> (Available bikes: "+bike_available_nearest_station+")<br> 2- <span>"+second_nearest_station+"</span> (Available bikes: "+bike_available_second_near_station+")"
+                              document.getElementById("sourceTitle").innerHTML="Nearest stations to your source<br><span class='availableBrackets'>(Available bikes)</span>";
+                              document.getElementById("sourceList").innerHTML="<span onclick=\"clickMarker('"+nearest_station+"')\">"+nearest_station+"</span> ("+bike_available_nearest_station+")<br><span onclick=\"clickMarker('"+second_nearest_station+"')\">"+second_nearest_station+"</span> ("+bike_available_second_near_station+")";
+                            }
+                        /*
+                        if(bike_available_second_near_station>0)
+                            {
+                             document.getElementById("demo4").innerHTML="the minimum distance is "+min;
+                             document.getElementById("demo2").innerHTML="The secocnd nearest station to your souce coordinate is "+second_nearest_station+" "+"Number of avaiable bikes are:"+bike_available_second_near_station;
+                            }
+                            */
+                        else
+                            {
+                            document.getElementById("sourceTitle").innerHTML="The two nearest stations to your location seems to be busy. Try again in few minutes!!";
+                            document.getElementById("sourceList").innerHTML= " ";
+                            }
+                        //document.getElementById("demo4").innerHTML="the minimum distance is "+min;
+                        //document.getElementById("demo2").innerHTML="The nearest station to your souce coordinate is "+nearest_station;
+                    }
+                    else{
+                        var bike_stand_available_nearest_station= station_no_bikes_avail_stand[idx][2];
+                        var bike_stand_available_second_near_station=station_no_bikes_avail_stand[idx_second_min_dist][2];
+                        if(bike_stand_available_nearest_station>0 || bike_stand_available_second_near_station>0 )
+                            {
+                           // document.getElementById("demo5").innerHTML="the minimum distance is "+min;
+                            // document.getElementById("demo5").innerHTML="Nearest station to your destination is <b>"+nearest_station+"</b>.<br> "+"(Avaiable bike stands: "+bike_stand_available_nearest_station+")";
+                            //
+                            // document.getElementById("demo6").innerHTML="Second nearest station to your destination is <b>"+second_nearest_station+"</b>.<br> "+"(Avaiable bike stands: "+bike_stand_available_second_near_station+")";
+                            // document.getElementById("destTitle").innerHTML="Nearest stations to your destination:"
+                            // document.getElementById("destList").innerHTML="1- <span>"+nearest_station+"</span> (Available bike stands: "+bike_stand_available_nearest_station+")<br> 2- <span>"+second_nearest_station+"</span> (Available bike stands: "+bike_stand_available_second_near_station+")"
+                            document.getElementById("destTitle").innerHTML="Nearest stations to your destination<br><span class='availableBrackets'>(Available stands)</span>";
+                            document.getElementById("destList").innerHTML="<span onclick=\"clickMarker('"+nearest_station+"')\">"+nearest_station+"</span> ("+bike_stand_available_nearest_station+")<br><span onclick=\"clickMarker('"+second_nearest_station+"')\">"+second_nearest_station+"</span> ("+bike_stand_available_second_near_station+")";
+                            }
+                        /*
+                        if(bike_stand_available_second_near_station>0)
+                            {
+                        document.getElementById("demo5").innerHTML="the minimum distance is "+min;
+                        document.getElementById("demo6").innerHTML="The nearest station to your destination coordinate is "+second_nearest_station+" "+"Number of avaiable bike stands are:"+bike_stand_available_second_near_station ;
+                            }
+                            */
+                        else
+                            {
+                            document.getElementById("destTitle").innerHTML="The two nearest stations to your location seems to be busy. Try again in few minutes!!";
+                            document.getElementById("destList").innerHTML= " ";
+                            }
+                       // document.getElementById("demo5").innerHTML="the minimum distance is "+min;
+                       // document.getElementById("demo6").innerHTML="The nearest station to your destination coordinate is "+nearest_station;
+                    }
+                    document.getElementById("dropup").style.display = "block";
+                }
+            function get_closest_distance_predicted_station(latitude,longitude,fore_temp,fore_weather,fore_wind,m,dayP,timeP)
+            {
+                var x= latitude;
+                var y=longitude;
+                var closest_location;
+                var min=0;
+                var axis=0;
+                var value=0;
+                  $.getJSON($SCRIPT_ROOT + '/all_available_details', {
+                    post: 0
+                }, function(data) {
+                var response_2=({{ data|safe }})
+                var response_2 = data;
+                    /*
+                var station_number=new Array(response_2.length);
+                for (var i=0;i<response_2.length;i++)
+                    {
+                       station_number[i]= response_2[i][0];
+                    }
+                    */
+             //   var common_station_no = station_number.filter(id => station_num.includes(id));  //station_num is the static station number received from table station
+                     var common_station_no=new Array(response_2.length);
+                    for (var i=0;i<response_2.length;i++)
+                    {
+                       common_station_no[i]= response_2[i][0];
+                    }
+                    
+              
+            var address_2=new Array(common_station_no.length);
+            
+            for(var i=0;i<common_station_no.length;i++)
+                {
+                address_2[i]=response_2[i][3];
+               // static_station_no[i]=myObj[i][5];
+                }
+                    
+            var lat=new Array(common_station_no.length);
+            var long=new Array(common_station_no.length);
+            //To get the list of latitude of stations
+            for(var i=0;i<common_station_no.length;i++)
+            {
+              lat[i]=response_2[i][4];
+            }
+            //To get the list of longitude of stations
+            for(var i=0;i<common_station_no.length;i++)
+            {
+                long[i]=response_2[i][5];
+            }
+            //To get the list of latitude and longitude of stations as a tuple
+            var latlong=new Array(common_station_no.length);
+            for(var i=0;i<common_station_no.length;i++)
+                {
+                    latlong[i]=[lat[i],long[i]];
+                }
+                var dist_array=new Array(latlong.length);
+                for(var i=0;i<latlong.length;i++)
+                {
+                    axis=((x-latlong[i][0])*(x-latlong[i][0]))+((y-latlong[i][1])*(y-latlong[i][1]))
+                    value=Math.sqrt(axis);
+                    dist_array[i]=value;
+                }
+                var min = Math.min.apply(Math, dist_array);
+                var idx=dist_array.indexOf(Math.min.apply(null,dist_array));
+                var idx_second_min_dist =dist_array.indexOf (Math.min.apply(null, dist_array.filter(n => n != min)));
+                var nearest_station=address_2[idx];
+                var nearest_station_number = common_station_no[idx];
+                var second_nearest_station=address_2[idx_second_min_dist];
+                var second_nearest_station_number = common_station_no[idx_second_min_dist];
+                var datePredict = new Date(parseInt(dayP.slice(0,4)), parseInt(dayP.slice(5,7)-1), parseInt(dayP.slice(8,10)));
+                var timePredict = parseInt(timeP.slice(0,2));
+                var weekDay = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][datePredict.getDay()];
+                console.log(weekDay);
+                console.log(timePredict);
+                var prediction_info_list = nearest_station_number+" "+second_nearest_station_number+" "+fore_temp+" "+fore_weather+" "+fore_wind+" "+m+" "+weekDay+" "+timePredict;
+                // document.getElementById("test1").innerHTML = prediction_info_list;
+                //document.getElementById("test2").innerHTML = prediction_info_list[0];
+                //prediction_info_list = JSON.stringify(prediction_info_list);
+               // myPrediction(prediction_info_list);
+                myPrediction(prediction_info_list);
+                function myPrediction(prediction_info_list) {
+                    $.getJSON($SCRIPT_ROOT + '/prediction_model', {
+                        post: prediction_info_list
+                    }, function(data) {
+                        var response=({{ data|safe }})
+                        var response = data;
+                        var bike_nearest_station = response[0];
+                        var bike_available_2nd_nearest = response[1];
+                        if (m == 0) {
+                          // document.getElementById("test1").innerHTML = nearest_station+" "+bike_nearest_station;
+                          // document.getElementById("test2").innerHTML = second_nearest_station+" "+bike_available_2nd_nearest;
+                          document.getElementById("sourceTitle").innerHTML="Nearest stations to your source<br><span class='availableBrackets'>(Predicted available bikes)</span>";
+                          document.getElementById("sourceList").innerHTML="<span onclick=\"clickMarker('"+nearest_station+"')\">"+nearest_station+"</span> ("+bike_nearest_station+")<br><span onclick=\"clickMarker('"+second_nearest_station+"')\">"+second_nearest_station+"</span> ("+bike_available_2nd_nearest+")";
+                        } else {
+                          // document.getElementById("test1").innerHTML = nearest_station+" "+bike_nearest_station;
+                          // document.getElementById("test2").innerHTML = second_nearest_station+" "+bike_available_2nd_nearest;
+                          document.getElementById("destTitle").innerHTML="Nearest stations to your destination<br><span class='availableBrackets'>(Predicted available stands)</span>";
+                          document.getElementById("destList").innerHTML="<span onclick=\"clickMarker('"+nearest_station+"')\">"+nearest_station+"</span> ("+bike_nearest_station+")<br><span onclick=\"clickMarker('"+second_nearest_station+"')\">"+second_nearest_station+"</span> ("+bike_available_2nd_nearest+")";
+                        }
+                    })
+                }
+                document.getElementById("dropup").style.display = "block";
+                      
+                  });
+            }
+                //This function is triggered whenver user clicks on "Enter starting point" field to enter the source
+                function initialize() {
+                    var input = document.getElementById('searchTextField');
+                    var autocomplete = new google.maps.places.Autocomplete(input);
+                    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                        var place = autocomplete.getPlace();
+                        var latitude = place.geometry.location.lat();
+                        var longitude=place.geometry.location.lng();
+                        var m=0;
+                        myfunction_get_updated_available_bikes_and_stands(latitude,longitude,m);
+                        //getDistanceFromLatLonInKm(latitude,longitude,m);
+                    });
+                }
+                //This function is triggered whenver user clicks on "Enter ending point" field to enter the destination
+                function initialize2() {
+                    var input = document.getElementById('searchTextField2');
+                    var autocomplete = new google.maps.places.Autocomplete(input);
+                    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                        var place = autocomplete.getPlace();
+                        var latitude = place.geometry.location.lat();
+                        var longitude=place.geometry.location.lng();
+                        var m=1;
+                        myfunction_get_updated_available_bikes_and_stands(latitude,longitude,m);
+                        //getDistanceFromLatLonInKm(latitude,longitude,m);
+                    });
+                }
+                function initialize3(string_value) {
+                    var list_string_arr = string_value.split(',');
+                    var fore_temp = parseInt(list_string_arr[0]);
+                    var fore_weather = list_string_arr[1];
+                    var fore_wind = parseInt(list_string_arr[2]);
+                    var input = document.getElementById('searchTextField3');
+                    var autocomplete = new google.maps.places.Autocomplete(input);
+                    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                        var place = autocomplete.getPlace();
+                        var latitude = place.geometry.location.lat();
+                        var longitude=place.geometry.location.lng();
+                        var m=0;
+                        // document.getElementById("test1").innerHTML = fore_temp ;
+                        // document.getElementById("test2").innerHTML = fore_weather;
+                        // document.getElementById("test3").innerHTML = fore_wind;
+                       get_closest_distance_predicted_station(latitude,longitude,fore_temp,fore_weather,fore_wind,m,list_string_arr[3],list_string_arr[4]);
+                        //getDistanceFromLatLonInKm(latitude,longitude,m);
+                    });
+                }
+                function initialize4(string_value) {
+                    var list_string_arr = string_value.split(',');
+                    var fore_temp = parseInt(list_string_arr[0]);
+                    var fore_weather = list_string_arr[1];
+                    var fore_wind = parseInt(list_string_arr[2]);
+                    var input = document.getElementById('searchTextField4');
+                    var autocomplete = new google.maps.places.Autocomplete(input);
+                    google.maps.event.addListener(autocomplete, 'place_changed', function () {
+                        var place = autocomplete.getPlace();
+                        var latitude = place.geometry.location.lat();
+                        var longitude=place.geometry.location.lng();
+                       var m=1;
+                     //   document.getElementById("test1").innerHTML = fore_temp ;
+                    //   document.getElementById("test2").innerHTML = fore_weather;
+                    //    document.getElementById("test3").innerHTML = fore_wind;
+                       get_closest_distance_predicted_station(latitude,longitude,fore_temp,fore_weather,fore_wind,m,list_string_arr[3],list_string_arr[4]);
+                        //getDistanceFromLatLonInKm(latitude,longitude,m);
+                    });
+                }
+//AIzaSyBi-bH5_sngxNibrgygRZDhmAv2fK5hzus(Working)//AIzaSyA3XfuMJJGzaU8TUItQM7XWD4esZdbpgtA (Blocked for now-will drop a mail to google)
+                google.maps.event.addDomListener(window, 'load', initialize);
+        </script>
+
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi-bH5_sngxNibrgygRZDhmAv2fK5hzus&callback=myMap&libraries=places"></script>
+    </body>
+</html>
