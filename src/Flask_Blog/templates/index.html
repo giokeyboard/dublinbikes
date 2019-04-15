@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <title>Dublin Bike App</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='Css_bikes.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Exo+2:500,700" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <div id="headbar">
+        <img src= "{{ url_for('static',filename='img/bike.png') }}" alt="bike pic">
+        <span id="firstUndLn"></span>
+        <h1>DUBLIN BIKES MAPPER</h1>
+        <span id="secondUndLn"></span>
+        <img src="{{ url_for('static',filename='img/marker.png') }}" alt="marker pic">
+      </div>
+    </header>
+    <main>
+      <div id="map"></div>
+      <section id="sidebar">
+        <div id="message">
+          <h2>WHO TOLD YOU IT IS ALL ABOUT LUCK?</h2>
+          <p>There are over <span>1500</span> bikes available around the city. Let us predict the best stations for you.</p>
+          <p id="test1"></p>
+          <p id="test2"></p>
+        </div>
+          <div id="trip">
+            <div id="tripButtons">
+              <div class="tripBtn" id="realtimeBtn">
+                <img src="{{ url_for('static',filename='img/destination.png') }}" alt="real time button">
+                <span>REAL TIME</span>
+              </div>
+              <div class="tripBtn" id="plantripBtn">
+                <img src="{{ url_for('static',filename='img/calendar.png') }}" alt="plan your trip button">
+                <span>PLAN YOUR TRIP</span>
+              </div>
+            </div>
+            <div id="form">
+                <p>Need a bike right now?</p>
+                <div class="inputs">
+                  <div id="from">
+                    <span>FROM:</span>
+                    <input id="searchTextField" type="text" size="50" placeholder="Enter starting point" autocomplete="on" runat="server" onclick="initialize()"/>
+                  </div>
+                  <div id="to">
+                    <span>TO:</span>
+                    <input id="searchTextField2" type="text" size="50" placeholder="Enter ending point" autocomplete="on" runat="server" onclick="initialize2()" />
+                  </div>
+              </div>
+            </div>
+          </div>
+            <div id="weather">
+              <h2 id="date"></h2>
+              <div id="conditions">
+                <div class="condition">
+                  <img src="{{ url_for('static',filename='img/seasons.png') }}" alt="forecast pic">
+                  <span id="coverage"></span>
+                </div>
+                  <div class="condition">
+                    <img src="{{ url_for('static',filename='img/thermometer.png') }}" alt="thermometer pic">
+                    <span  id="temp"></span>
+                  </div>
+                  <div class="condition">
+                    <img src="{{ url_for('static',filename='img/breeze.png') }}" alt="wind pic">
+                    <span id="wind"></span>
+                  </div>
+              </div>
+            </div>
+      </section>
+        <div id="dropup">
+          <p id="sourceTitle"></p>
+          <p id="sourceList"></p>
+          <p id="destTitle"></p>
+          <p id="destList"></p>
+        </div>
+    </main>
+
+    <!-- Import ajax -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <script>{% include 'js/myjs.js' %}</script>
+
+    <!-- Define Python connection -->
+    <script type=text/javascript>
+      // Set-up connection variable between JS and Flask server application
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBi-bH5_sngxNibrgygRZDhmAv2fK5hzus&callback=myMap&libraries=places"></script>
+  </body>
+</html>
